@@ -1,4 +1,4 @@
-package merrwarp
+package merrwrap
 
 import (
 	"fmt"
