@@ -6,27 +6,50 @@ import (
 	"testing"
 )
 
-func TestWrapError_Current(t *testing.T) {
+func TestWrapError_Super(t *testing.T) {
 	assert := assert.New(t)
 
-	testErr := fmt.Errorf("[err] test 1")
+	testErr := fmt.Errorf("[super] test 1")
 
-	emptyErr := Error(nil)
-	existErr := Error(testErr)
+	nilErr := Error(nil)
+	exampleErr := Error(testErr)
 
 	tests := map[string]struct {
 		err    *WrapError
 		output error
 	}{
-		"empty": {err: emptyErr, output: nil},
-		"exist": {err: existErr, output: testErr},
+		"nil":     {err: nilErr, output: nil},
+		"example": {err: exampleErr, output: testErr},
 	}
 
-	fmt.Println(emptyErr)
-	fmt.Println(existErr)
+	fmt.Println(nilErr)
+	fmt.Println(exampleErr)
 
 	for _, t := range tests {
-		current := t.err.Current()
+		current := t.err.Super()
 		assert.Equal(t.output, current)
+	}
+}
+
+func TestWrapError_Origin(t *testing.T) {
+	assert := assert.New(t)
+
+	originErr := fmt.Errorf("[origin] test 1")
+	superErr := fmt.Errorf("[origin] test 2")
+
+	nilErr := Error(nil)
+	exampleErr := Error(originErr)
+
+	tests := map[string]struct {
+		err    *WrapError
+		output error
+	}{
+		"nil":     {err: nilErr, output: nil},
+		"example": {err: exampleErr.Wrap(superErr), output: exampleErr},
+	}
+
+	for _, t := range tests {
+		origin := t.err.Origin()
+		assert.Equal(t.output, origin)
 	}
 }
